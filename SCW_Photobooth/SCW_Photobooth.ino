@@ -1,20 +1,17 @@
-/*  This sketch is a extension/expansion/reork of the 'official' ESP32 Camera example
+/*  
+ *  Author: Louis Moreau 
+ *  Project: https://github.com/luisomoreau/ESP32-cam-MQTT
+ *  
+ *  This sketch is a modification of the 'official' ESP32 Camera example
  *  sketch from Expressif:
  *  https://github.com/espressif/arduino-esp32/tree/master/libraries/ESP32/examples/Camera/CameraWebServer
  *
  *  The PubSub Library is used to connect to a MQTT broker (Scaleway IoT Hub in our example)
- *  
- *  Author: Louis Moreau 
  */
 
 #include "esp_camera.h"
 #include <WiFi.h>
 #include <PubSubClient.h>
-
-//
-// WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
-//            or another board which has PSRAM enabled
-//
 
 // Select camera model
 //#define CAMERA_MODEL_WROVER_KIT
@@ -39,8 +36,9 @@ const char* HostName = "Photobooth_Scaleway";
 const char* mqttUser = "your-device-id";
 const char* mqttPassword = "";
 const char* topic_PHOTO = "SMILE";
-const char* topic_UP = "PICTURE";
+const char* topic_PUBLISH = "PICTURE";
 const char* topic_FLASH = "FLASH";
+const int MAX_PAYLOAD = 60000;
 
 bool flash;
 
@@ -140,7 +138,7 @@ void setup() {
 
   // Set MQTT Connection
   client.setServer(mqttServer, 1883);
-  client.setBufferSize (51200); //This is the maximum payload length
+  client.setBufferSize (MAX_PAYLOAD); //This is the maximum payload length
   client.setCallback(callback);
 }
 
@@ -169,9 +167,7 @@ void take_picture() {
   }
   Serial.println("Picture taken");
   digitalWrite(LED_BUILTIN, LOW);
-  sendMQTT(fb);
-  client.publish(topic_UP, fb->buf, fb->len, false);
-  Serial.println("Picture sent");
+  sendMQTT(fb->buf, fb->len);
   esp_camera_fb_return(fb); // must be used to free the memory allocated by esp_camera_fb_get().
   
 }
@@ -198,11 +194,16 @@ void set_flash() {
     }
 }
 
-void sendMQTT(camera_fb_t * fb){
-  Serial.println("Sending picture");
-  client.publish(topic_PHOTO, fb->buf, fb->len, false);
-  Serial.println("Picture sent");
-  esp_camera_fb_return(fb); // must be used to free the memory allocated by esp_camera_fb_get().
+void sendMQTT(const uint8_t * buf, uint32_t len){
+  Serial.println("Sending picture...");
+  if(len>MAX_PAYLOAD){
+    Serial.print("Picture too large, increase the MAX_PAYLOAD value");
+  }else{
+    Serial.print("Picture sent ? : ");
+    Serial.println(client.publish(topic_PUBLISH, buf, len, false));
+  }
+  
+  
 }
 
 

@@ -34,7 +34,7 @@
 #define FACE_COLOR_CYAN   (FACE_COLOR_BLUE | FACE_COLOR_GREEN)
 #define FACE_COLOR_PURPLE (FACE_COLOR_BLUE | FACE_COLOR_RED)
 
-extern void sendMQTT(camera_fb_t * fb);
+extern void sendMQTT(const uint8_t * buf, uint32_t len);
 extern bool useMQTT;
 
 typedef struct {
@@ -234,10 +234,6 @@ static esp_err_t capture_handler(httpd_req_t *req){
     httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=capture.jpg");
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
 
-    if(useMQTT == true){
-      sendMQTT(fb);
-    }
-
     size_t out_len, out_width, out_height;
     uint8_t * out_buf;
     bool s;
@@ -248,12 +244,16 @@ static esp_err_t capture_handler(httpd_req_t *req){
         if(fb->format == PIXFORMAT_JPEG){
             fb_len = fb->len;
             res = httpd_resp_send(req, (const char *)fb->buf, fb->len);
+            if(useMQTT == true){
+              sendMQTT(fb->buf, fb->len);
+            }
         } else {
             jpg_chunking_t jchunk = {req, 0};
             res = frame2jpg_cb(fb, 80, jpg_encode_stream, &jchunk)?ESP_OK:ESP_FAIL;
             httpd_resp_send_chunk(req, NULL, 0);
             fb_len = jchunk.len;
         }
+        
         esp_camera_fb_return(fb);
         int64_t fr_end = esp_timer_get_time();
         Serial.printf("JPG: %uB %ums\n", (uint32_t)(fb_len), (uint32_t)((fr_end - fr_start)/1000));
