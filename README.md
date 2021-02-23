@@ -1,6 +1,6 @@
 # Get started with the ESP32 cam module and store pictures in the Cloud
 
-In this tutorial, we will see how to take a picture publishing a message on a SMILE topic and forward this message to an S3-compatible Object Storage bucket.
+In this tutorial, we will see how to take a picture publishing a message on a `SMILE` topic and forward this message to a S3-compatible Object Storage bucket.
 
 ![diagram](assets/diagram.png)
 
@@ -15,7 +15,7 @@ Get the boards:
 * [Aliexpress](https://fr.aliexpress.com/item/1005001900359624.html)
 * [Amazon](https://www.amazon.fr/diymore-d%C3%A9veloppement-Bluetooth-ESP32-CAM-MB-Dual-core/dp/B08P1NMPLL)
 
-The external antenna is optional but will give you a better Wifi coverage
+The external antenna is optional but will give you a better Wifi coverage.
 
 ## Prerequisties
 
@@ -166,7 +166,7 @@ To see your pictures, you can go back to your [Object Storage bucket](https://co
 
 ## Going further
 
-The default `CameraWebServer` also provides a web interface to take pictures and change settings. I slidghtly modified the `app_httpd.cpp` code to also send the picture when captured using the web interface.
+The default `CameraWebServer` also provides a web interface to take pictures and change settings. I slightly modified the `app_httpd.cpp` code to also send the picture when captured using the web interface.
 
 To open the web interface just copy past the local IP provided by the Serial console. Click on `Get still` at the bottom left corner. Once taken, the picture will be publish under the `PICTURE` MQTT topic and then forwarded to your Object Storage bucket!
 
