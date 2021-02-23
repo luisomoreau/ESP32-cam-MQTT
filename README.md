@@ -125,10 +125,57 @@ Once done, your cloud environment is all set. It is time to program our ESP32 ca
 
 ## ESP32 Cam Programm
 
+You can either start with the `CameraWeServer` example sketch and add modify the code or open the `SCW_Photobooth` sketch in [this Github repository](https://github.com/luisomoreau/ESP32-cam-MQTT).
 
+![arduino-camerawebserver-example](assets/arduino-camerawebserver-example.png)
 
+If you choose to open the `SCW_Photobooth.ino` sketch, you just need to modify the following variable to make it work (the `mqttUser` being your Scaleway `Device ID`):
+
+```
+//WIFI config
+const char* ssid = "your-ssid";
+const char* password = "your-passord";
+
+//MQTT config
+bool useMQTT = true;
+const char* mqttServer = "iot.fr-par.scw.cloud";
+const char* HostName = "Photobooth_Scaleway";
+const char* mqttUser = "your-device-id";
+const char* mqttPassword = "";
+const char* topic_PHOTO = "SMILE";
+const char* topic_PUBLISH = "PICTURE";
+const char* topic_FLASH = "FLASH";
+const int MAX_PAYLOAD = 60000; // Maximum payload size to be sent using MQTT (in Bytes)
+```
+
+And do not forget to add the PubSubClient library:
+
+![arduino-import-pubsub-lib](assets/arduino-import-pubsub-lib.png)
+
+You will fin this library under the library folder in the Github repository.
+
+Now you can connect your board, select the port and uplaod the sketch. Then open the Serial console and the MQTT explorer client:
+
+![arduino-console-mqtt-explorer](assets/arduino-console-mqtt-explorer.png)
+
+On the MQTT Explorer client, you can send an empty payload under the `SMILE` topic. Click on `PUBLISH` and your camera will take a picture and publish it under the `PICTURE` topic.
+
+To see your pictures, you can go back to your [Object Storage bucket](https://console.scaleway.com/object-storage/buckets) in the Scaleway console. You should see your pictures being populated as you take new pictures.
+
+![scw-bucket-pic](assets/scw-bucket-pic.png)
 
 ## Going further
+
+The default `CameraWebServer` also provides a web interface to take pictures and change settings. I slidghtly modified the `app_httpd.cpp` code to also send the picture when captured using the web interface.
+
+To open the web interface just copy past the local IP provided by the Serial console. Click on `Get still` at the bottom left corner. Once taken, the picture will be publish under the `PICTURE` MQTT topic and then forwarded to your Object Storage bucket!
+
+![diagram-2](assets/diagram-2.png)
+
+![camerawebserver](assets/camerawebserver.png)
+
+
+## Ressources
 
 Here is some interesting readings if you'd like to deep dive into the subject:
 
