@@ -26,7 +26,7 @@ The external antenna is optional but will give you a better Wifi coverage
 ![arduino-installer](assets/arduino-installer.png)
 
 
-## Setting up environment
+## Setting up your developer environment
 
 Open Arduino preferences:
 
@@ -48,7 +48,82 @@ Select the AI Thinker ESP32-CAM:
 
 ![select-board](assets/select-board.png)
 
-## Creating a hub
+
+## Creating the message broker (IoT Hub) and provision the devices
+
+Go to the [IoT Hub](https://console.scaleway.com/iot-hub/hubs) tab in the Scaleway's console:
+
+![create hub](assets/scw-create-hub.png)
+
+Create your first Hub and choose the `Free SHARED` Plan:
+
+![create hub 1](assets/scw-create-hub-1.png)
+
+Click on `create and add a device`, your hub will be ready in few seconds.
+
+### Adding a device
+
+In this tutorial, we will add two distinguish devices: The **camera** itself, which be be our ESP32 cam hardware, and the **MQTT explorer**, which is a software that we will be using to trigger the camera and to view the payloads that are going through our Hub.
+
+![create device](assets/scw-create-device.png)
+
+Please, for this tutorial, choose `Allow unsecure connections` so we can easily connect our devices to our hub.
+
+![scw-view-devices](assets/scw-view-devices.png)
+
+Finally, add another device that will be called `mqtt-explorer`:
+
+
+![create device 1](assets/scw-create-device-1.png)
+
+Once done, we will download MQTT Explorer and test the connection. 
+
+### MQTT Explorer
+
+MQTT Explorer is a comprehensive MQTT client that provides a structured overview of your MQTT topics and makes working with devices/services on your broker dead-simple.
+
+To install a lightweight MQTT, just download it here: [mqtt-explorer.com](http://mqtt-explorer.com/)
+
+Open MQTT Explorer and fill the following information:
+
+Host: `iot.fr-par.scw.cloud`
+
+Username: `your-device-id` (the Device ID can be found on the overview tab when clicking on a device, see below)
+
+![scw-device-id](assets/scw-device-id.png)
+
+![mqtt-explorer](assets/mqtt-explorer.png)
+
+Click on Connect, you should see the following screen:
+
+![mqtt-explorer-connected](assets/mqtt-explorer-connected.png) 
+
+## Create an Object Storage bucket
+
+To create an object storage bucket to store our pictures, navigate under the [Object Storage tab](https://console.scaleway.com/object-storage/buckets) and click on `+ create a bucket`:
+
+![scw-create-obj-storage](assets/scw-create-obj-storage.png)
+
+Give a name to your bucket and select a region :
+
+![scw-create-obj-storage-1](assets/scw-create-obj-storage-1.png)
+
+Click on `Create a bucket` and you are done.
+
+## Setting up an IoT Route
+
+The IoT Routes allow your IoT Hub to forward messages to non-MQTT destinations. In this project, we will use the [Object Storage Route](https://www.scaleway.com/en/docs/scaleway-iothub-route/#-Scaleway-Object-Storage-Route/).
+
+Go back to your [IoT Hub](https://console.scaleway.com/iot-hub/hubs) tab, select your hub and click on `Routes`:
+
+![scw-create-route](assets/scw-create-route.png)
+
+
+![scw-create-route-1](assets/scw-create-route-1.png)
+
+Once done, your cloud environment is all set. It is time to program our ESP32 cam module
+
+## ESP32 Cam Programm
 
 
 
